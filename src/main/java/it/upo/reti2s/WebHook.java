@@ -12,8 +12,11 @@ import de.fh_zwickau.informatik.sensor.IZWayApi;
 import de.fh_zwickau.informatik.sensor.ZWayApiHttp;
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
+import it.upo.reti2s.hue.rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 import static spark.Spark.*;
 
@@ -31,8 +34,14 @@ public class WebHook {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebHook.class);
 
     private static final String IP_ADDRESS = "172.30.1.137";
-    private static final String USER = "admin";
-    private static final String PASSWORD = "raz4reti2";
+    private static final String USER       = "admin";
+    private static final String PASSWORD   = "raz4reti2";
+
+    /***********************************/
+    /* ID DEVICE                       */
+    /***********************************/
+
+    private static final int ID_DEVICE_LUCE = 20;
 
     private static final IZWayApi zwayApi = new ZWayApiHttp(IP_ADDRESS, 8083, "http", USER, PASSWORD, 0, false, new ZWaySimpleCallback());
 
@@ -64,7 +73,16 @@ public class WebHook {
      */
     private static void doWebhook(AIResponse input, Fulfillment output) {
 
-        final DeviceList allDevices = zwayApi.getDevices();
+        //final DeviceList allDevices = zwayApi.getDevices();
+
+        final String baseURL = "http://172.30.1.138";
+
+        final String username = "SqdltmqZU0bXpeXxdYb65nxlmZcyn39t7ctibKvl";
+
+        final String lightsURL = baseURL + "/api/" + username + "/lights/";
+
+        final Map<String, ?> allLights = rest.get(lightsURL);
+
 
         //<editor-fold desc = "LUCE">
         /***********************************/
@@ -73,28 +91,45 @@ public class WebHook {
 
         if(input.getResult().getAction().equalsIgnoreCase("lightsOn"))
         {
+            /*
             for (Device dev : allDevices.getAllDevices()) {
-                if (dev.getDeviceType().equalsIgnoreCase("SwitchBinary") && dev.getNodeId() == 20) {
+                if (dev.getDeviceType().equalsIgnoreCase("SwitchBinary") && dev.getNodeId() == ID_DEVICE_LUCE) {
                     // turn it on
                     LOGGER.info("Turn device " + dev.getNodeId() + " ON");
                     dev.on();
                 }
             }
+            */
+
+            for (String light : allLights.keySet()) {
+                String callURL = lightsURL + light + "/state";
+                String body = "{ \"on\" : true, \"xy\":[0.41,0.51721] }";
+                rest.put(callURL, body, "application/json");
+            }
+
         }
 
         /***********************************/
-        /* ACCENDI LUCE                    */
+        /* SPEGNI LUCE                    */
         /***********************************/
         if(input.getResult().getAction().equalsIgnoreCase("lightsOff"))
         {
+            /*
             for (Device dev : allDevices.getAllDevices()) {
-                if (dev.getDeviceType().equalsIgnoreCase("SwitchBinary") && dev.getNodeId() == 20) {
+                if (dev.getDeviceType().equalsIgnoreCase("SwitchBinary") && dev.getNodeId() == ID_DEVICE_LUCE) {
                     // turn it on
                     LOGGER.info("Turn device " + dev.getNodeId() + " OFF");
                     dev.off();
                 }
             }
+            */
+            for (String light : allLights.keySet()) {
+                String callURL = lightsURL + light + "/state";
+                String body = "{ \"on\" : false }";
+                rest.put(callURL, body, "application/json");
+            }
         }
+
         //</editor-fold desc = LUCE>
 
     }
