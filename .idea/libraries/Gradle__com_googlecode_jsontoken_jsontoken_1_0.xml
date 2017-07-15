@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.googlecode.jsontoken:jsontoken:1.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.jsontoken/jsontoken/1.0/96aac7c88082530d860a5a4791c4829409dfddd1/jsontoken-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.jsontoken/jsontoken/1.0/c83c35929b7ba3027161374a5ec09546e3a3fb61/jsontoken-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
