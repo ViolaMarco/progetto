@@ -43,14 +43,16 @@ public class OAuth2ClientCredentials {
 
     /** Domain name in the "Callback URL". */
     //public static final String DOMAIN = "127.0.0.1";
-    public static final String DOMAIN = "http://bc3ffde1.ngrok.io";
+    public static final String DOMAIN = "https://cfd34f67.ngrok.io";
 
+    //da errore nel caso in cui le credenziali non siano inserite
     public static void errorIfNotSpecified() {
-        if (API_KEY.startsWith("Enter ") || API_SECRET.startsWith("Enter ")) {
+        if (API_KEY.equalsIgnoreCase("") || API_SECRET.equalsIgnoreCase("")) {
             System.out.println(
-                    "Enter API Key and API Secret from http://www.dailymotion.com/profile/developer"
+                    "Enter API Key and API Secret from https://dev.fitbit.com/apps/details/"
                             + " into API_KEY and API_SECRET in " + OAuth2ClientCredentials.class);
             System.exit(1);
         }
     }
+
 }

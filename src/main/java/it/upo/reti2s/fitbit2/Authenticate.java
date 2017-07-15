@@ -1,4 +1,4 @@
-package it.upo.reti2s.fitbit;
+package it.upo.reti2s.fitbit2;
 
 /**
  * Created by Fra on 15/07/2017.
@@ -36,7 +36,7 @@ public class Authenticate {
 
     /** Directory to store user credentials. */
     private static final java.io.File DATA_STORE_DIR =
-            new java.io.File(System.getProperty("user.home"), "/desktop");
+            new java.io.File(System.getProperty("user.home"), "/desktop/info");
 
     /**
      * Global instance of the {@link DataStoreFactory}. The best practice is to make it a single
@@ -54,8 +54,7 @@ public class Authenticate {
     static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
     private static final String TOKEN_SERVER_URL = "https://api.fitbit.com/oauth2/token";
-    private static final String AUTHORIZATION_SERVER_URL =
-            "https://www.fitbit.com/oauth2/authorize";
+    private static final String AUTHORIZATION_SERVER_URL = "https://www.fitbit.com/oauth2/authorize";
 
     /** Authorizes the installed application to access user's protected data. */
     private static Credential authorize() throws Exception {
