@@ -43,7 +43,7 @@ public class OAuth2ClientCredentials {
 
     /** Domain name in the "Callback URL". */
     //public static final String DOMAIN = "127.0.0.1";
-    public static final String DOMAIN = "https://cfd34f67.ngrok.io";
+    public static final String DOMAIN = "https://3016ea62.ngrok.io";
 
     //da errore nel caso in cui le credenziali non siano inserite
     public static void errorIfNotSpecified() {
