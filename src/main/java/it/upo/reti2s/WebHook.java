@@ -10,9 +10,9 @@ import ai.api.model.Fulfillment;
 
 import de.fh_zwickau.informatik.sensor.IZWayApi;
 import de.fh_zwickau.informatik.sensor.ZWayApiHttp;
-import de.fh_zwickau.informatik.sensor.model.devices.Device;
-import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
-import it.upo.reti2s.hue.rest;
+
+import it.upo.reti2s.hue.Rest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,64 +73,66 @@ public class WebHook {
      */
     private static void doWebhook(AIResponse input, Fulfillment output) {
 
-        //final DeviceList allDevices = zwayApi.getDevices();
-
-        final String baseURL = "http://172.30.1.138";
-
-        final String username = "SqdltmqZU0bXpeXxdYb65nxlmZcyn39t7ctibKvl";
-
-        final String lightsURL = baseURL + "/api/" + username + "/lights/";
-
-        final Map<String, ?> allLights = rest.get(lightsURL);
-
-
         //<editor-fold desc = "LUCE">
+
+        final String UrlHue = "http://172.30.1.138";
+
+        final String usernameHue = "SqdltmqZU0bXpeXxdYb65nxlmZcyn39t7ctibKvl";
+
+        final String lightsURL = UrlHue + "/api/" + usernameHue + "/lights/";
+
+        //todo:da rimettere final Map<String, ?> allLights = Rest.get(lightsURL);
+
+
+
         /***********************************/
         /* ACCENDI LUCE                    */
         /***********************************/
 
+        /*
         if(input.getResult().getAction().equalsIgnoreCase("lightsOn"))
         {
-            /*
-            for (Device dev : allDevices.getAllDevices()) {
-                if (dev.getDeviceType().equalsIgnoreCase("SwitchBinary") && dev.getNodeId() == ID_DEVICE_LUCE) {
-                    // turn it on
-                    LOGGER.info("Turn device " + dev.getNodeId() + " ON");
-                    dev.on();
-                }
-            }
-            */
-
             for (String light : allLights.keySet()) {
                 String callURL = lightsURL + light + "/state";
                 String body = "{ \"on\" : true, \"xy\":[0.41,0.51721] }";
-                rest.put(callURL, body, "application/json");
+                Rest.put(callURL, body, "application/json");
             }
 
         }
+        */
 
         /***********************************/
         /* SPEGNI LUCE                    */
         /***********************************/
+        /*
         if(input.getResult().getAction().equalsIgnoreCase("lightsOff"))
         {
-            /*
-            for (Device dev : allDevices.getAllDevices()) {
-                if (dev.getDeviceType().equalsIgnoreCase("SwitchBinary") && dev.getNodeId() == ID_DEVICE_LUCE) {
-                    // turn it on
-                    LOGGER.info("Turn device " + dev.getNodeId() + " OFF");
-                    dev.off();
-                }
-            }
-            */
             for (String light : allLights.keySet()) {
                 String callURL = lightsURL + light + "/state";
                 String body = "{ \"on\" : false }";
-                rest.put(callURL, body, "application/json");
+                Rest.put(callURL, body, "application/json");
             }
         }
+        */
 
         //</editor-fold desc = LUCE>
+
+        //<editor-fold desc = "FITBIT">
+
+
+        /***********************************/
+        /* INFORMAZIONI PAZIENTE           */
+        /***********************************/
+        if(input.getResult().getAction().equalsIgnoreCase("askInfoHeartRate"))
+        {
+            System.out.println("PORCO DIO");
+            output.setSpeech     ("azione controllo vecchio");
+
+            /*
+            https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=228GYV&scope=weight
+             */
+        }
+        //</editor-fold desc = FITBIT>
 
     }
 
