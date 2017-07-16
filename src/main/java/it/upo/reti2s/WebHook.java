@@ -84,7 +84,6 @@ public class WebHook {
         //todo:da rimettere final Map<String, ?> allLights = Rest.get(lightsURL);
 
 
-
         /***********************************/
         /* ACCENDI LUCE                    */
         /***********************************/
@@ -97,12 +96,11 @@ public class WebHook {
                 String body = "{ \"on\" : true, \"xy\":[0.41,0.51721] }";
                 Rest.put(callURL, body, "application/json");
             }
-
         }
         */
 
         /***********************************/
-        /* SPEGNI LUCE                    */
+        /* SPEGNI LUCE                     */
         /***********************************/
         /*
         if(input.getResult().getAction().equalsIgnoreCase("lightsOff"))
@@ -125,7 +123,6 @@ public class WebHook {
         /***********************************/
         if(input.getResult().getAction().equalsIgnoreCase("askInfoHeartRate"))
         {
-            System.out.println("PORCO DIO");
             output.setSpeech     ("azione controllo vecchio");
 
             /*
