@@ -36,7 +36,7 @@ public class Server {
             response.getResult().setAction("lightsOn");
             String json = gson.toJson(response);
 
-            HttpPost request = new HttpPost("https://c1b5b3cc.ngrok.io");
+            HttpPost request = new HttpPost("https://6e8a19a9.ngrok.io");
             StringEntity params =new StringEntity(json);
             request.addHeader("content-type", "application/json; charset=utf-8");
             request.setEntity(params);
