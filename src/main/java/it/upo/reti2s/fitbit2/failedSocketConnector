@@ -1,7 +1,0 @@
-
---- error
-
-[main] WARN org.mortbay.log - failed SocketConnector@https://cfd34f67.ngrok.io:4567: java.net.UnknownHostException: https://cfd34f67.ngrok.io
-[main] WARN org.mortbay.log - failed Server@33a10788: java.net.UnknownHostException: https://cfd34f67.ngrok.io
-[main] INFO org.mortbay.log - Stopped SocketConnector@https://cfd34f67.ngrok.io:4567
-https://cfd34f67.ngrok.io

@@ -16,6 +16,11 @@ import it.upo.reti2s.hue.Rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -42,6 +47,7 @@ public class WebHook {
     /***********************************/
 
     private static final int ID_DEVICE_LUCE = 20;
+    private static final List<MyThread> threads = new ArrayList<>();
 
     private static final IZWayApi zwayApi = new ZWayApiHttp(IP_ADDRESS, 8083, "http", USER, PASSWORD, 0, false, new ZWaySimpleCallback());
 
@@ -71,7 +77,7 @@ public class WebHook {
      * @param input  the request body that comes from api.ai
      * @param output the @link(Fulfillment) response to be sent to api.ai
      */
-    private static void doWebhook(AIResponse input, Fulfillment output) {
+    private static void doWebhook(AIResponse input, Fulfillment output) throws InterruptedException {
 
         //<editor-fold desc = "LUCE">
 
@@ -84,25 +90,27 @@ public class WebHook {
         //todo:da rimettere final Map<String, ?> allLights = Rest.get(lightsURL);
 
 
-
         /***********************************/
         /* ACCENDI LUCE                    */
         /***********************************/
 
-        /*
+
         if(input.getResult().getAction().equalsIgnoreCase("lightsOn"))
         {
+            /*
             for (String light : allLights.keySet()) {
                 String callURL = lightsURL + light + "/state";
                 String body = "{ \"on\" : true, \"xy\":[0.41,0.51721] }";
                 Rest.put(callURL, body, "application/json");
             }
-
+            */
+            output.setSpeech("luci onnnnnnn");
+            System.out.println("luci ok");
         }
-        */
+
 
         /***********************************/
-        /* SPEGNI LUCE                    */
+        /* SPEGNI LUCE                     */
         /***********************************/
         /*
         if(input.getResult().getAction().equalsIgnoreCase("lightsOff"))
@@ -125,7 +133,6 @@ public class WebHook {
         /***********************************/
         if(input.getResult().getAction().equalsIgnoreCase("askInfoHeartRate"))
         {
-            System.out.println("PORCO DIO");
             output.setSpeech     ("azione controllo vecchio");
 
             /*
@@ -134,6 +141,41 @@ public class WebHook {
         }
         //</editor-fold desc = FITBIT>
 
+
+    if(input.getResult().getAction().equalsIgnoreCase("playMusic"))
+    {
+        MyThread thread = new MyThread();
+        threads.add(thread);
+        thread.start();
+        output.setSpeech("musica accesa");
+        System.out.print("music on");
+
+    }
+    if(input.getResult().getAction().equalsIgnoreCase("stopMusic"))
+    {
+        for (MyThread t : threads)
+        {
+            t.interrupt();
+        }
+        System.out.print("music off");
+
     }
 
+    }
+
+    public static class MyThread extends Thread {
+
+        public void run(){
+            File clip = new File("src/main/resources/relax.wav");
+            try{
+                Clip music =  AudioSystem.getClip();
+                music.open(AudioSystem.getAudioInputStream(clip));
+                music.start();
+                //this.sleep(music.getMicrosecondLength()/1000);
+            }catch (Exception e)
+            {
+                LOGGER.error("unable to play sound since:",e);
+            }
+        }
+    }
 }
