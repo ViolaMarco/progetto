@@ -44,7 +44,7 @@ public class Sample {
     /**
      * OAuth 2 scope.
      */
-    private static final String SCOPE = "read";
+    private static final String SCOPE = "weight";
 
     /**
      * Global instance of the HTTP transport.

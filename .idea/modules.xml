@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/progetto.iml" filepath="$PROJECT_DIR$/.idea/progetto.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/todo-apiai.iml" filepath="$PROJECT_DIR$/.idea/modules/todo-apiai.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/todo-apiai_main.iml" filepath="$PROJECT_DIR$/.idea/modules/todo-apiai_main.iml" group="todo-apiai" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/todo-apiai_test.iml" filepath="$PROJECT_DIR$/.idea/modules/todo-apiai_test.iml" group="todo-apiai" />
     </modules>
   </component>
 </project>
