@@ -1,7 +1,9 @@
 package it.upo.reti2s.Oauth2;
 
 import ai.api.GsonFactory;
+
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import org.json.simple.*;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
@@ -12,15 +14,26 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.Json;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
+import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.HTTP;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.mortbay.util.ajax.JSON;
+import sun.net.www.http.HttpClient;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 
@@ -114,18 +127,65 @@ public class Sample {
 //        }
 //    }
 
-    private static void run(HttpRequestFactory requestFactory) throws IOException {
+    private static void run(HttpRequestFactory requestFactory) throws IOException, ParseException {
 
-        Gson gson = new Gson();
+
 
         //GenericUrl fitbitAuthUrl = new GenericUrl("https://api.fitbit.com/1/user/"+USER_ID+"/activities/date/today.json");
-        GenericUrl fitbitAuthUrl = new GenericUrl("https://api.fitbit.com/1/user/"+USER_ID+"/activities/weight/date/today.json");
+ /*      GenericUrl fitbitAuthUrl = new GenericUrl("https://api.fitbit.com/1/user/"+USER_ID+"/activities/weight/date/today.json");
         HttpRequest request = requestFactory.buildGetRequest(fitbitAuthUrl);
         HttpResponse resp = request.execute();
 
         System.out.println(resp.getContentType());
 
         System.out.println(resp.parseAsString());
+
+        */
+        GenericUrl fitbitAuthUrl = new GenericUrl("https://api.fitbit.com/1/user/"+USER_ID+"/body/log/weight/date/today.json");
+        HttpRequest request = requestFactory.buildGetRequest(fitbitAuthUrl);
+        HttpResponse resp = request.execute();
+
+        JSONParser jsonParser = new JSONParser();
+        org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) jsonParser.parse(resp.parseAsString());
+
+        System.out.println(jsonObject.toJSONString());
+        org.json.simple.JSONArray weight = (org.json.simple.JSONArray) jsonObject.get("weight");
+
+        System.out.println("Weight is: " + weight);
+        
+
+
+
+
+/*
+        JSONObject json = new JSONObject(resp); // Convert text to object
+        System.out.println(json.toString(4)); // Print it with specified indentation
+*/
+/*
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpGet getReq = new HttpGet("https://api.fitbit.com/1/user/"+USER_ID+"/activities/weight/date/today.json");
+        getReq.addHeader("accept", "application/json");
+        CloseableHttpResponse resp = httpClient.execute(getReq);
+
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(
+                        (resp.getEntity().getContent())
+                )
+        );
+
+        StringBuilder content = new StringBuilder();
+
+        String line;
+        while (null != (line = br.readLine())) {
+            content.append(line);
+        }
+
+        Object obj=JSONValue.parse(content.toString());
+        JSONObject finalResult=(JSONObject)obj;
+        System.out.println(finalResult);
+*/
+
+
 /*
         JSONObject jsonObj = new JSONObject(resp.parseAsString());
         System.out.print(JSON.toString(jsonObj));
