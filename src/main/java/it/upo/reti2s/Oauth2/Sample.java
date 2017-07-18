@@ -1,22 +1,25 @@
 package it.upo.reti2s.Oauth2;
 
+import ai.api.GsonFactory;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.Json;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.gson.Gson;
+import org.json.HTTP;
+import org.json.JSONObject;
+import org.mortbay.util.ajax.JSON;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -35,6 +38,7 @@ public class Sample {
     private static final java.io.File DATA_STORE_DIR =
             new java.io.File(System.getProperty("user.home"), ".store/dailymotion_sample");
 
+    private static final String USER_ID = "5VF2HQ" ;
     /**
      * Global instance of the {@link DataStoreFactory}. The best practice is to make it a single
      * globally shared instance across your application.
@@ -70,11 +74,15 @@ public class Sample {
                 HTTP_TRANSPORT,
                 JSON_FACTORY,
                 new GenericUrl(TOKEN_SERVER_URL),
-                new ClientParametersAuthentication(
-                        OAuth2ClientCredentials.API_KEY, OAuth2ClientCredentials.API_SECRET),
+                new BasicAuthentication(OAuth2ClientCredentials.API_KEY, OAuth2ClientCredentials.API_SECRET),
                 OAuth2ClientCredentials.API_KEY,
                 AUTHORIZATION_SERVER_URL).setScopes(Arrays.asList(SCOPE))
                 .setDataStoreFactory(DATA_STORE_FACTORY).build();
+                /*new ClientParametersAuthentication(
+                        OAuth2ClientCredentials.API_KEY, OAuth2ClientCredentials.API_SECRET),
+                OAuth2ClientCredentials.API_KEY,
+                AUTHORIZATION_SERVER_URL).setScopes(Arrays.asList(SCOPE))
+                .setDataStoreFactory(DATA_STORE_FACTORY).build();*/
         // authorize
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost(
                 OAuth2ClientCredentials.DOMAIN).setPort(OAuth2ClientCredentials.PORT).build();
@@ -107,6 +115,27 @@ public class Sample {
 //    }
 
     private static void run(HttpRequestFactory requestFactory) throws IOException {
+
+        Gson gson = new Gson();
+
+        //GenericUrl fitbitAuthUrl = new GenericUrl("https://api.fitbit.com/1/user/"+USER_ID+"/activities/date/today.json");
+        GenericUrl fitbitAuthUrl = new GenericUrl("https://api.fitbit.com/1/user/"+USER_ID+"/activities/weight/date/today.json");
+        HttpRequest request = requestFactory.buildGetRequest(fitbitAuthUrl);
+        HttpResponse resp = request.execute();
+
+        System.out.println(resp.getContentType());
+
+        System.out.println(resp.parseAsString());
+/*
+        JSONObject jsonObj = new JSONObject(resp.parseAsString());
+        System.out.print(JSON.toString(jsonObj));
+
+*/
+/*
+        String gsonFromJson = gson.fromJson(resp.parseAsString(), String.class);
+
+        System.out.print(gsonFromJson);
+*/
 
     }
 
