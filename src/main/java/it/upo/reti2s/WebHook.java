@@ -132,6 +132,7 @@ public class WebHook {
         if(input.getResult().getAction().equalsIgnoreCase("askInfoHeartRate"))
         {
             output.setSpeech(String.valueOf(Oauth2Client.getHeartRate()));
+            output.setDisplay(String.valueOf(Oauth2Client.getHeartRate()));
         }
 
         /***********************************/
