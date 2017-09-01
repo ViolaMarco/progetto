@@ -16,6 +16,12 @@ import it.upo.reti2s.hue.Rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import java.rmi.server.ExportException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -81,6 +87,8 @@ public class WebHook {
 
         final String lightsURL = UrlHue + "/api/" + usernameHue + "/lights/";
 
+        final List<MusicThread> threads = new ArrayList<>();
+
         //todo:da rimettere final Map<String, ?> allLights = Rest.get(lightsURL);
 
 
@@ -129,8 +137,49 @@ public class WebHook {
             https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=228GYV&scope=weight
              */
         }
+
+
         //</editor-fold desc = FITBIT>
 
+        /***********************************/
+        /* MUSIC                           */
+        /***********************************/
+        if(input.getResult().getAction().equalsIgnoreCase("playMusic"))
+        {
+            MusicThread musicThread = new MusicThread();
+            threads.add(musicThread);
+            musicThread.run();
+            output.setSpeech("Musica accesa");
+            LOGGER.info("Music on");
+        }
+        if(input.getResult().getAction().equalsIgnoreCase("stopMusic"))
+        {
+            for (MusicThread thread : threads)
+            {
+                thread.interrupt();
+            }
+            output.setSpeech("Musica spenta");
+            LOGGER.info("Music off");
+        }
+
+    }
+
+    private static class MusicThread extends Thread
+    {
+        @Override
+        public void run() {
+            File clip = new File("src/main/resources/relaz.waw");
+            try
+            {
+                Clip music = AudioSystem.getClip();
+                music.open(AudioSystem.getAudioInputStream(clip));
+                music.start();
+            }
+            catch (Exception e)
+            {
+                LOGGER.error("Unable to play sound since ", e);
+            }
+        }
     }
 
 }
