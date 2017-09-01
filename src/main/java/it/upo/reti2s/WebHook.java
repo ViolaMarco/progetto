@@ -11,6 +11,8 @@ import ai.api.model.Fulfillment;
 import de.fh_zwickau.informatik.sensor.IZWayApi;
 import de.fh_zwickau.informatik.sensor.ZWayApiHttp;
 
+import it.upo.reti2s.Oauth2.Oauth2Client;
+import it.upo.reti2s.fitbit.ServerFitbit;
 import it.upo.reti2s.hue.Rest;
 
 import org.slf4j.Logger;
@@ -58,6 +60,9 @@ public class WebHook {
         Gson gson = GsonFactory.getDefaultFactory().getGson();
 
 
+        //start server for heartRate fitbit
+        ServerFitbit.startServer();
+
         // start webhook sulla richiesta
         post("/", (request, response) -> {
             Fulfillment output = new Fulfillment();
@@ -89,14 +94,13 @@ public class WebHook {
 
         final List<MusicThread> threads = new ArrayList<>();
 
-        //todo:da rimettere final Map<String, ?> allLights = Rest.get(lightsURL);
+        final Map<String, ?> allLights = Rest.get(lightsURL);
 
 
         /***********************************/
         /* ACCENDI LUCE                    */
         /***********************************/
 
-        /*
         if(input.getResult().getAction().equalsIgnoreCase("lightsOn"))
         {
             for (String light : allLights.keySet()) {
@@ -105,12 +109,11 @@ public class WebHook {
                 Rest.put(callURL, body, "application/json");
             }
         }
-        */
 
         /***********************************/
         /* SPEGNI LUCE                     */
         /***********************************/
-        /*
+
         if(input.getResult().getAction().equalsIgnoreCase("lightsOff"))
         {
             for (String light : allLights.keySet()) {
@@ -119,27 +122,17 @@ public class WebHook {
                 Rest.put(callURL, body, "application/json");
             }
         }
-        */
+
 
         //</editor-fold desc = LUCE>
-
-        //<editor-fold desc = "FITBIT">
-
 
         /***********************************/
         /* INFORMAZIONI PAZIENTE           */
         /***********************************/
         if(input.getResult().getAction().equalsIgnoreCase("askInfoHeartRate"))
         {
-            output.setSpeech     ("azione controllo vecchio");
-
-            /*
-            https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=228GYV&scope=weight
-             */
+            output.setSpeech(String.valueOf(Oauth2Client.getHeartRate()));
         }
-
-
-        //</editor-fold desc = FITBIT>
 
         /***********************************/
         /* MUSIC                           */

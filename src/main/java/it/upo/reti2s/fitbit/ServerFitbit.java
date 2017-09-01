@@ -4,12 +4,18 @@ import ai.api.GsonFactory;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 import com.google.gson.Gson;
+import it.upo.reti2s.Oauth2.Oauth2Client;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -17,16 +23,27 @@ import java.io.IOException;
  */
 public class ServerFitbit {
 
-    private static final int HEARTRATE_THRESHOLH = 110;
-    private static final String URL_WEBHOOK = "";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerFitbit.class);
 
-    public  static  void main(String[] args) throws IOException {
-        ServerFitbit server = new ServerFitbit();
-        server.analyzeHeartRate(120);
+    private static final int HEARTRATE_THRESHOLH = 110;
+
+    private final ScheduledExecutorService scheduler ;
+
+
+    public ServerFitbit() {
+        scheduler = Executors.newScheduledThreadPool(1);
     }
 
-    private void analyzeHeartRate(final int heartRate)
-            throws IOException {
+
+    public static void startServer()
+    {
+        ServerFitbit server = new ServerFitbit();
+        server.scheduler.scheduleAtFixedRate(new TaskHeartRate(), 0, 5, TimeUnit.MINUTES);
+    }
+
+    private static void analyzeHeartRate(final int heartRate)
+            throws IOException
+    {
         Gson gson = GsonFactory.getDefaultFactory().getGson();
         HttpClient httpClient = HttpClientBuilder.create().build();
 
@@ -49,6 +66,19 @@ public class ServerFitbit {
             request.setEntity(params);
             httpClient.execute(request);
 
+        }
+    }
+
+    private static class TaskHeartRate implements Runnable
+    {
+        @Override
+        public void run() {
+            int heartRate = Oauth2Client.getHeartRate();
+            try {
+                analyzeHeartRate(heartRate);
+            } catch (IOException ioe) {
+                LOGGER.error("unable to analyzeHeartRate, since ", ioe);
+            }
         }
     }
 }
