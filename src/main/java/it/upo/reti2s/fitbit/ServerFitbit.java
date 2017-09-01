@@ -12,7 +12,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,17 @@ public class ServerFitbit {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFitbit.class);
 
     private static final int HEARTRATE_THRESHOLH = 110;
+    private static final String PROPERTY_NAME_NGROCK = "ngrock";
+    private static final Properties properties = new Properties();
+
+    static
+    {
+        try {
+            properties.load(new FileInputStream("src/main/resources/Properties.properties"));
+        } catch (IOException e) {
+            LOGGER.error("Unable to read Properties file");
+        }
+    }
 
     private final ScheduledExecutorService scheduler ;
 
@@ -54,7 +67,8 @@ public class ServerFitbit {
             response.getResult().setAction("lightsOn");
             String json = gson.toJson(response);
 
-            HttpPost request = new HttpPost("https://6e8a19a9.ngrok.io");
+
+            HttpPost request = new HttpPost(properties.getProperty(PROPERTY_NAME_NGROCK));
             StringEntity params =new StringEntity(json);
             request.addHeader("content-type", "application/json; charset=utf-8");
             request.setEntity(params);

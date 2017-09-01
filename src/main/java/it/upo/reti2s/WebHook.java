@@ -161,7 +161,7 @@ public class WebHook {
     {
         @Override
         public void run() {
-            File clip = new File("src/main/resources/relaz.waw");
+            File clip = new File("src/main/resources/relax.waw");
             try
             {
                 Clip music = AudioSystem.getClip();
