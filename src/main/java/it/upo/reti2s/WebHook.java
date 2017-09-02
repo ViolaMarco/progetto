@@ -25,6 +25,7 @@ import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static spark.Spark.*;
 
@@ -52,6 +53,8 @@ public class WebHook {
     private static final int ID_DEVICE_LUCE = 20;
 
     private static final IZWayApi zwayApi = new ZWayApiHttp(IP_ADDRESS, 8083, "http", USER, PASSWORD, 0, false, new ZWaySimpleCallback());
+
+    private static final ConcurrentLinkedQueue<Clip> musics = new ConcurrentLinkedQueue<>();
 
 
     public static void main(String[] args)
@@ -84,7 +87,7 @@ public class WebHook {
      */
     private static void doWebhook(AIResponse input, Fulfillment output) {
 
-        //<editor-fold desc = "LUCE">
+        //<editor-fold desc = "LUCI">
 
         final String UrlHue = "http://172.30.1.138";
 
@@ -92,7 +95,6 @@ public class WebHook {
 
         final String lightsURL = UrlHue + "/api/" + usernameHue + "/lights/";
 
-        final List<MusicThread> threads = new ArrayList<>();
 
         final Map<String, ?> allLights = Rest.get(lightsURL);
 
@@ -132,7 +134,8 @@ public class WebHook {
         if(input.getResult().getAction().equalsIgnoreCase("askInfoHeartRate"))
         {
             output.setSpeech(String.valueOf(Oauth2Client.getHeartRate()));
-            output.setDisplay(String.valueOf(Oauth2Client.getHeartRate()));
+            output.setDisplayText(String.valueOf(Oauth2Client.getHeartRate()));
+
         }
 
         /***********************************/
@@ -140,17 +143,39 @@ public class WebHook {
         /***********************************/
         if(input.getResult().getAction().equalsIgnoreCase("playMusic"))
         {
-            MusicThread musicThread = new MusicThread();
-            threads.add(musicThread);
-            musicThread.run();
-            output.setSpeech("Musica accesa");
-            LOGGER.info("Music on");
+            boolean startMusic = true;
+            for(Clip clip : musics)
+            {
+                if(clip.isActive())
+                    startMusic = false;
+            }
+
+            if(startMusic)
+            {
+                System.out.println("----------------");
+                System.out.println("START");
+                System.out.println("----------------");
+                MusicThread musicThread = new MusicThread();
+                musicThread.run();
+                output.setSpeech("Musica accesa");
+                LOGGER.info("Music on");
+            }
+            else
+            {
+                output.setSpeech("Musica già accesa");
+                LOGGER.info("Music is already on");
+            }
+
         }
         if(input.getResult().getAction().equalsIgnoreCase("stopMusic"))
         {
-            for (MusicThread thread : threads)
+            System.out.println("----------------");
+            System.out.println("STOP");
+            System.out.println("----------------");
+            for (Clip clip : musics)
             {
-                thread.interrupt();
+                clip.stop();
+                musics.remove(clip);
             }
             output.setSpeech("Musica spenta");
             LOGGER.info("Music off");
@@ -162,12 +187,13 @@ public class WebHook {
     {
         @Override
         public void run() {
-            File clip = new File("src/main/resources/relax.waw");
+            File clip = new File("src/main/resources/relax.wav");
             try
             {
                 Clip music = AudioSystem.getClip();
                 music.open(AudioSystem.getAudioInputStream(clip));
                 music.start();
+                musics.add(music);
             }
             catch (Exception e)
             {
